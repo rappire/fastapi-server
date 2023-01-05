@@ -49,7 +49,7 @@ def get_db():
 
 
 @router.get("")
-def get_schedule(itemid: str, companyid: str, db: Session = Depends(get_db)):
+async def get_schedule(itemid: str, companyid: str, db: Session = Depends(get_db)):
     schedule = (
         db.query(models.Schedule)
         .filter(
@@ -72,7 +72,7 @@ def get_schedule(itemid: str, companyid: str, db: Session = Depends(get_db)):
 
 
 @router.post("")
-def post_schedule(schedule: dict, db: Session = Depends(get_db)):
+async def post_schedule(schedule: dict, db: Session = Depends(get_db)):
     for schedule_list in schedule.values():
         for i in schedule_list:
             S = models.Schedule()
@@ -85,12 +85,13 @@ def post_schedule(schedule: dict, db: Session = Depends(get_db)):
             S.start = i["start"]
             S.end = i["end"]
             db.add(S)
+            # primary key 오류
     db.commit()
     return
 
 
 @router.put("_1")
-def put_schedule(schedule: Schedule, db: Session = Depends(get_db)):
+async def put_schedule(schedule: Schedule, db: Session = Depends(get_db)):
     S = db.query(models.Schedule).filter(models.Schedule.id == schedule.id).first()
     if S is None:
         raise get_exception()
@@ -105,7 +106,7 @@ def put_schedule(schedule: Schedule, db: Session = Depends(get_db)):
 
 
 @router.put("_2")
-def put_schedule(schedule: List[Schedule], db: Session = Depends(get_db)):
+async def put_schedule(schedule: List[Schedule], db: Session = Depends(get_db)):
     for i in schedule:
         S = db.query(models.Schedule).filter(models.Schedule.id == i.id).first()
         if S is None:

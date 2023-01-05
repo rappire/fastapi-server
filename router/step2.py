@@ -1,7 +1,7 @@
 import sys
 
 sys.path.append("..")
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends
 import models
 from database import engine, SessionLocal
 from sqlalchemy.orm import Session
@@ -48,7 +48,7 @@ def get_db():
 
 
 @router.get("")
-def get_plan(itemid: str, companyid: str, db: Session = Depends(get_db)):
+async def get_plan(itemid: str, companyid: str, db: Session = Depends(get_db)):
     plan = (
         db.query(models.Plan)
         .filter(models.Plan.itemid == itemid and models.Plan.companyid == companyid)
@@ -69,7 +69,7 @@ def get_plan(itemid: str, companyid: str, db: Session = Depends(get_db)):
 
 
 @router.post("")
-def post_plan(plan: List[Plan], db: Session = Depends(get_db)):
+async def post_plan(plan: List[Plan], db: Session = Depends(get_db)):
     plan_model = models.Plan()
     plan_model.companyid = plan[0].companyid
     plan_model.itemid = plan[0].itemid
@@ -88,12 +88,3 @@ def post_plan(plan: List[Plan], db: Session = Depends(get_db)):
         db.add(plan_name_model)
     db.commit()
     return
-
-
-def get_exception():
-    credentials_exception = HTTPException(
-        status_code=status.HTTP_401_UNAUTHORIZED,
-        detail="There is no data",
-        headers={"WWW-Authenticate": "Bearer"},
-    )
-    return credentials_exception
