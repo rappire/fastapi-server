@@ -1,0 +1,1 @@
+docker run -it -p 9999:8000 --name  fastapi webserver
