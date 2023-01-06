@@ -1,7 +1,7 @@
 import sys
 
 sys.path.append("..")
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException, status
 import models
 from database import engine, SessionLocal
 from sqlalchemy.orm import Session
@@ -105,4 +105,3 @@ async def post_plan(plan: Plan, db: Session = Depends(get_db)):
     plan_name_model.planid = id
     db.add(plan_name_model)
     db.commit()
-    return
