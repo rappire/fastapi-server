@@ -6,6 +6,7 @@ import models
 from database import engine, SessionLocal
 from sqlalchemy.orm import Session
 from sqlalchemy.sql import func
+from sqlalchemy import desc
 from pydantic import BaseModel, Field
 from typing import List
 
@@ -69,22 +70,39 @@ async def get_plan(itemid: str, companyid: str, db: Session = Depends(get_db)):
 
 
 @router.post("")
-async def post_plan(plan: List[Plan], db: Session = Depends(get_db)):
-    plan_model = models.Plan()
-    plan_model.companyid = plan[0].companyid
-    plan_model.itemid = plan[0].itemid
-    try:
-        id = db.query(func.max(models.Plan.planid)).first()[0] + 1
-    except:
-        id = 1
-    plan_model.planid = id
-    db.add(plan_model)
-    for i, P in enumerate(plan):
-        plan_name_model = models.Plan_name()
-        plan_name_model.idx = i
-        plan_name_model.id = P.id
-        plan_name_model.name = P.name
-        plan_name_model.planid = id
-        db.add(plan_name_model)
+async def post_plan(plan: Plan, db: Session = Depends(get_db)):
+    id = (
+        db.query(models.Plan)
+        .filter(
+            models.Plan.companyid == plan.companyid
+            and models.Plan.itemid == plan.itemid
+        )
+        .first()
+    )
+    if id is None:
+        try:
+            id = db.query(func.max(models.Plan.planid)).first()[0] + 1
+        except:
+            id = 1
+        plan_model = models.Plan()
+        plan_model.companyid = plan.companyid
+        plan_model.itemid = plan.itemid
+        plan_model.planid = id
+        db.add(plan_model)
+    else:
+        id = id.planid
+
+    idx = 0
+    planlist = db.query(models.Plan_name).filter(models.Plan_name.planid == id).all()
+    for i in planlist:
+        if i.idx > idx:
+            idx = i.idx
+    idx += 1
+    plan_name_model = models.Plan_name()
+    plan_name_model.idx = idx
+    plan_name_model.id = plan.id
+    plan_name_model.name = plan.name
+    plan_name_model.planid = id
+    db.add(plan_name_model)
     db.commit()
     return
