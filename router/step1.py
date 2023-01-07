@@ -39,7 +39,13 @@ async def get_name(db: Session = Depends(get_db)):
 @router.get("/id")
 async def get_id(db: Session = Depends(get_db)):
     try:
-        id = db.query(func.max(models.Schedule.id)).first()[0] + 1
+        id = (
+            max(
+                db.query(func.max(models.Schedule.id)).first()[0],
+                db.query(func.max(models.Plan_name.id)).first()[0],
+            )
+            + 1
+        )
     except:
         id = 1
     return id
