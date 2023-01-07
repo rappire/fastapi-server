@@ -90,6 +90,11 @@ async def post_schedule(schedule: dict, db: Session = Depends(get_db)):
     return
 
 
+@router.post("_2")
+async def post_schedule(temp: List, db: Session = Depends(get_db)):
+    return temp[0]
+
+
 @router.put("_1")
 async def put_schedule(schedule: Schedule, db: Session = Depends(get_db)):
     S = db.query(models.Schedule).filter(models.Schedule.id == schedule.id).first()
