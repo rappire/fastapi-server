@@ -42,7 +42,7 @@ async def get_id(db: Session = Depends(get_db)):
         id = (
             max(
                 db.query(func.max(models.Schedule.id)).first()[0],
-                db.query(func.max(models.Plan_name.id)).first()[0],
+                db.query(func.max(models.Plan.maxid)).first()[0],
             )
             + 1
         )

@@ -64,7 +64,6 @@ async def get_schedule(itemid: str, companyid: str, db: Session = Depends(get_db
     for i in machine:
         scheduledict[i.machine] = []
     for i in schedule:
-        print(i.machine)
         i.start = i.start.strftime("%Y-%m-%d %H:%M")
         i.end = i.end.strftime("%Y-%m-%d %H:%M")
         scheduledict[i.machine].append(i)

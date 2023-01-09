@@ -25,19 +25,12 @@ class Plan(BaseModel):
     class Config:
         schema_extra = {
             "example": {
-                "id": "1",
+                "id": 1,
                 "companyid": "company1",
                 "itemid": "item1",
                 "name": "name1",
             }
         }
-
-
-class Plan_name(BaseModel):
-    planid: int = Field()
-    id: int = Field()
-    name: str = Field(min_length=1)
-    idx: int = Field()
 
 
 def get_db():
@@ -80,8 +73,12 @@ async def post_plan(plan: List[Plan], db: Session = Depends(get_db)):
         P.companyid = plan[0].companyid
         P.itemid = plan[0].itemid
     string = ""
+    maxint = -1
     for i in plan:
         string += f"{i.id},{i.name};"
+        if i.id > maxint:
+            maxint = i.id
+    P.maxid = maxint
     P.planlist = string
     db.add(P)
     db.commit()

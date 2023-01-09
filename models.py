@@ -34,6 +34,7 @@ class Plan(Base):
     itemid = Column(String(50), nullable=False)
     estbl = Column(Boolean, default=False, nullable=False)
     planlist = Column(String(1000), nullable=True)
+    maxid = Column(Integer, nullable=False)
 
 
 class Schedule(Base):
