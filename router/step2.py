@@ -57,51 +57,31 @@ async def get_plan(itemid: str, companyid: str, db: Session = Depends(get_db)):
     )
     if plan is None:
         return None
-    planid = plan.planid
-    plan_name = (
-        db.query(models.Plan_name).filter(models.Plan_name.planid == planid).all()
-    )
-    plan_name.sort(key=lambda x: x.idx)
     planlist = []
-    for i in plan_name:
-        P = Plan(companyid=plan.companyid, itemid=plan.itemid, id=i.id, name=i.name)
+    for i in plan.planlist[:-1].split(";"):
+        id, name = i.split(",")
+        P = Plan(companyid=companyid, itemid=itemid, id=id, name=name)
         planlist.append(P)
     return planlist
 
 
 @router.post("")
-async def post_plan(plan: Plan, db: Session = Depends(get_db)):
-    id = (
+async def post_plan(plan: List[Plan], db: Session = Depends(get_db)):
+    P = (
         db.query(models.Plan)
         .filter(
-            models.Plan.companyid == plan.companyid
-            and models.Plan.itemid == plan.itemid
+            models.Plan.companyid == plan[0].companyid
+            and models.Plan.itemid == plan[0].itemid
         )
         .first()
     )
-    if id is None:
-        try:
-            id = db.query(func.max(models.Plan.planid)).first()[0] + 1
-        except:
-            id = 1
-        plan_model = models.Plan()
-        plan_model.companyid = plan.companyid
-        plan_model.itemid = plan.itemid
-        plan_model.planid = id
-        db.add(plan_model)
-    else:
-        id = id.planid
-
-    idx = 0
-    planlist = db.query(models.Plan_name).filter(models.Plan_name.planid == id).all()
-    for i in planlist:
-        if i.idx > idx:
-            idx = i.idx
-    idx += 1
-    plan_name_model = models.Plan_name()
-    plan_name_model.idx = idx
-    plan_name_model.id = plan.id
-    plan_name_model.name = plan.name
-    plan_name_model.planid = id
-    db.add(plan_name_model)
+    if P is None:
+        P = models.Plan()
+        P.companyid = plan[0].companyid
+        P.itemid = plan[0].itemid
+    string = ""
+    for i in plan:
+        string += f"{i.id},{i.name};"
+    P.planlist = string
+    db.add(P)
     db.commit()

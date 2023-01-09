@@ -29,18 +29,11 @@ class Name(Base):
 
 class Plan(Base):
     __tablename__ = "plan"
-    planid = Column(Integer, primary_key=True)
+    planid = Column(Integer, primary_key=True, autoincrement=True)
     companyid = Column(String(50), nullable=False)
     itemid = Column(String(50), nullable=False)
     estbl = Column(Boolean, default=False, nullable=False)
-
-
-class Plan_name(Base):
-    __tablename__ = "plan_name"
-    planid = Column(Integer, nullable=False)
-    id = Column(Integer, primary_key=True)
-    name = Column(String(50), nullable=False)
-    idx = Column(Integer, nullable=False)
+    planlist = Column(String(1000), nullable=True)
 
 
 class Schedule(Base):
