@@ -21,9 +21,9 @@ class Schedule(BaseModel):
     itemid: str = Field(min_length=1)
     machine: str = Field(min_length=1)
     name: str = Field(min_length=1)
-    start: str = Field(min_length=1)
-    end: str = Field(min_length=1)
-    color: str = Field(min_length=1)
+    start: str = Field(blank=True, null=True)
+    end: str = Field(blank=True, null=True)
+    color: str = Field(blank=True, null=True)
 
     class Config:
         schema_extra = {
