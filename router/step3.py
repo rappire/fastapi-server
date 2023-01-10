@@ -6,7 +6,7 @@ import models
 from database import engine, SessionLocal
 from sqlalchemy.orm import Session
 from pydantic import BaseModel, Field
-from typing import List
+from typing import List, Optional
 
 router = APIRouter(
     prefix="/step3", tags=["step3"], responses={401: {"user": "Not authorized"}}
@@ -21,9 +21,9 @@ class Schedule(BaseModel):
     itemid: str = Field(min_length=1)
     machine: str = Field(min_length=1)
     name: str = Field(min_length=1)
-    start: str = Field(blank=True, null=True)
-    end: str = Field(blank=True, null=True)
-    color: str = Field(blank=True, null=True)
+    start: Optional[str]
+    end: Optional[str]
+    color: Optional[str]
 
     class Config:
         schema_extra = {
