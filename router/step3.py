@@ -76,7 +76,7 @@ async def post_schedule(schedule: List[Schedule], db: Session = Depends(get_db))
         S = db.query(models.Schedule).filter(models.Schedule.id == i.id).first()
         if S is None:
             S = models.Schedule()
-        S.id = i.id
+            S.id = i.id
         S.companyid = i.companyid
         S.itemid = i.itemid
         S.machine = i.machine
@@ -94,7 +94,8 @@ async def post_schedule(schedule: List[Schedule], db: Session = Depends(get_db))
 async def put_schedule(schedule: Schedule, db: Session = Depends(get_db)):
     S = db.query(models.Schedule).filter(models.Schedule.id == schedule.id).first()
     if S is None:
-        raise get_exception()
+        S = models.Schedule()
+        S.id = schedule.id
     S.machine = schedule.machine
     S.name = schedule.name
     S.color = schedule.color
